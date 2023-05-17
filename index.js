@@ -1,5 +1,6 @@
 const express = require('express')
 const app = express()
+const jwt =  require('jsonwebtoken');  //require('crypto').randomBytes(64).toString('hex')
 require('dotenv').config()
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cors = require('cors');
@@ -58,11 +59,25 @@ async function run() {
       res.send(result)
     })
 
-    app.delete('booking/:id', async(req, res) =>{
+    app.delete('/booking/item/:id', async(req, res) =>{
       const id = req.params.id;
-      const query = { _id: new ObjectId(id)}
+      console.log(id);
+      const query = {_id: new ObjectId(id)}
       const result = await bookingCollection.deleteOne(query)
       res.send(result)
+    })
+
+    app.patch('/booking/:id', async(req, res) => {
+      const id =req.params.id;
+      const query = {_id: new ObjectId(id)};
+      const updateBooking = req.body;
+      const updateDoc = {
+        $set: {
+          status: updateBooking.status
+        }
+      };
+      const result = await bookingCollection.updateOne(query, updateDoc);
+      res.send(result);
     })
 
     // Send a ping to confirm a successful connection
